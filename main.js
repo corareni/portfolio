@@ -201,32 +201,36 @@ onScroll();
   setTimeout(finish, 2000);
 })();
 
-// Intro statement fills in from grey to black word by word as you scroll through it
+// Intro statement and About story fill in from grey to black word by word as you scroll through them
 (() => {
-  const box = document.querySelector('.intro__text');
-  if (!box || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const words = [];
-  box.querySelectorAll('p').forEach((para) => {
-    const parts = para.textContent.split(/(\s+)/);
-    para.textContent = '';
-    parts.forEach((part) => {
-      if (/^\s+$/.test(part) || part === '') { para.append(part); return; }
-      const w = document.createElement('span');
-      w.className = 'word';
-      w.textContent = part;
-      para.append(w);
-      words.push(w);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const blocks = [...document.querySelectorAll('.intro__text, .about__story')].map((box) => {
+    const words = [];
+    box.querySelectorAll('p').forEach((para) => {
+      const parts = para.textContent.split(/(\s+)/);
+      para.textContent = '';
+      parts.forEach((part) => {
+        if (/^\s+$/.test(part) || part === '') { para.append(part); return; }
+        const w = document.createElement('span');
+        w.className = 'word';
+        w.textContent = part;
+        para.append(w);
+        words.push(w);
+      });
     });
+    box.classList.add('fill');
+    return { box, words };
   });
-  box.classList.add('fill');
   let ticking = false;
   const update = () => {
     ticking = false;
-    const r = box.getBoundingClientRect();
-    // Starts when the text's top is low on screen, done when its bottom reaches the middle
-    const p = Math.min(Math.max((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35), 0), 1);
-    const lit = Math.round(p * words.length);
-    words.forEach((w, i) => w.classList.toggle('on', i < lit));
+    blocks.forEach(({ box, words }) => {
+      const r = box.getBoundingClientRect();
+      // Starts when the text's top is low on screen, done when its bottom reaches the middle
+      const p = Math.min(Math.max((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35), 0), 1);
+      const lit = Math.round(p * words.length);
+      words.forEach((w, i) => w.classList.toggle('on', i < lit));
+    });
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   update();
