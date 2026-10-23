@@ -17,8 +17,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    try {
+      if (!sessionStorage.getItem('ca-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('intro');
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
+<div class="loader" aria-hidden="true">
+  <div class="loader__inner">
+    <span class="loader__mark">CA<b>.</b></span>
+    <span class="loader__name">Coralie Affeld</span>
+  </div>
+</div>
 
 <header class="nav">
   <a href="#top" class="nav__logo" aria-label="Back to top">CA<span>.</span></a>
@@ -462,6 +475,7 @@
   <p>Built by Coralie Affeld &middot; 2026</p>
   <a href="#top">Back to top &uarr;</a>
 </footer>
+<div class="wordmark" aria-hidden="true"><span>Coralie Affeld</span></div>
 
 <script src="main.js" defer></script>
 </body>

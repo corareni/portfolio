@@ -10,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; scrollbar-gutter: stable; }
 body {
   margin: 0;
   background: var(--paper);
@@ -283,3 +283,34 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 
 /* Hero pixel dissolve canvas */
 .hero-particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; visibility: hidden; }
+
+/* Intro loader (first visit per session) */
+.loader { display: none; }
+.intro .loader {
+  display: flex; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center;
+  background: var(--ink); color: #fff;
+  transition: transform .9s cubic-bezier(.76, 0, .24, 1);
+}
+.intro body { overflow: hidden; }
+.loader__inner { display: flex; align-items: baseline; gap: .35em; font-size: clamp(28px, 4vw, 48px); letter-spacing: -.02em; }
+.loader__mark { font-weight: 800; opacity: 0; transform: scale(.8); transition: opacity .5s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
+.loader__mark b { color: var(--orange); font-weight: 800; }
+.loader__name {
+  font-weight: 300; white-space: nowrap; overflow: hidden; max-width: 0;
+  transition: max-width 1s cubic-bezier(.65, 0, .35, 1) .55s;
+}
+.intro--play .loader__mark { opacity: 1; transform: none; }
+.intro--play .loader__name { max-width: 9em; }
+.intro--done .loader { transform: translateY(-100%); }
+
+/* Intro statement fills in word by word */
+.fill .word { color: #c9c9c9; transition: color .35s ease; }
+.fill .word.on { color: inherit; }
+
+/* Giant wordmark cut off by the bottom of the page */
+.wordmark {
+  overflow: hidden; height: 0.72em; line-height: 1;
+  font-size: 12.5vw; font-weight: 800; letter-spacing: -.045em;
+  padding: 0 var(--gutter); max-width: var(--max); margin: 0 auto; white-space: nowrap;
+}
+.wordmark span { display: inline-block; transform: translateY(.06em); }

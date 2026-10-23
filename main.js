@@ -149,18 +149,10 @@ onScroll();
   });
 })();
 
-// Grade tiles count up from 0.0 to the real grade when they scroll into view
+// Numbers count up from zero to their real value when they scroll into view (grades and quick facts)
 (() => {
-  const nums = [...document.querySelectorAll('.grades strong')];
-  if (!nums.length || !('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window)) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const targets = nums.map((el) => {
-    const value = parseFloat(el.textContent);
-    const decimals = (el.textContent.split('.')[1] || '').length;
-    el.textContent = (0).toFixed(decimals);
-    return { el, value, decimals };
-  });
 
   const run = ({ el, value, decimals }, delay) => {
     const duration = 1400;
@@ -175,10 +167,82 @@ onScroll();
     requestAnimationFrame(tick);
   };
 
-  const io = new IntersectionObserver((entries) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    targets.forEach((t, i) => run(t, i * 120));
-    io.disconnect();
-  }, { threshold: 0.4 });
-  io.observe(document.querySelector('.grades'));
+  ['.grades', '.stats'].forEach((selector) => {
+    const group = document.querySelector(selector);
+    if (!group) return;
+    const targets = [...group.querySelectorAll('strong')].map((el) => {
+      const value = parseFloat(el.textContent);
+      const decimals = (el.textContent.split('.')[1] || '').length;
+      el.textContent = (0).toFixed(decimals);
+      return { el, value, decimals };
+    });
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      targets.forEach((t, i) => run(t, i * 120));
+      io.disconnect();
+    }, { threshold: 0.4 });
+    io.observe(group);
+  });
+})();
+
+
+// Intro loader: "CA." grows into the full name, then the screen lifts to reveal the hero
+(() => {
+  const root = document.documentElement;
+  const loader = document.querySelector('.loader');
+  if (!loader || !root.classList.contains('intro')) { if (loader) loader.remove(); return; }
+  try { sessionStorage.setItem('ca-intro', '1'); } catch (e) {}
+  const finish = () => {
+    root.classList.add('intro--done');
+    setTimeout(() => { root.classList.remove('intro', 'intro--play', 'intro--done'); loader.remove(); }, 900);
+  };
+  // Name writes out at ~0.5s, the screen lifts at ~2s
+  requestAnimationFrame(() => root.classList.add('intro--play'));
+  setTimeout(finish, 2000);
+})();
+
+// Intro statement fills in from grey to black word by word as you scroll through it
+(() => {
+  const box = document.querySelector('.intro__text');
+  if (!box || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const words = [];
+  box.querySelectorAll('p').forEach((para) => {
+    const parts = para.textContent.split(/(\s+)/);
+    para.textContent = '';
+    parts.forEach((part) => {
+      if (/^\s+$/.test(part) || part === '') { para.append(part); return; }
+      const w = document.createElement('span');
+      w.className = 'word';
+      w.textContent = part;
+      para.append(w);
+      words.push(w);
+    });
+  });
+  box.classList.add('fill');
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const r = box.getBoundingClientRect();
+    // Starts when the text's top is low on screen, done when its bottom reaches the middle
+    const p = Math.min(Math.max((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35), 0), 1);
+    const lit = Math.round(p * words.length);
+    words.forEach((w, i) => w.classList.toggle('on', i < lit));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  update();
+})();
+
+// Footer wordmark: size the name to fill the content width exactly
+(() => {
+  const mark = document.querySelector('.wordmark');
+  const text = mark && mark.querySelector('span');
+  if (!text) return;
+  const fit = () => {
+    mark.style.fontSize = '100px';
+    const cs = getComputedStyle(mark);
+    const room = mark.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    mark.style.fontSize = (100 * room / text.getBoundingClientRect().width) + 'px';
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  addEventListener('resize', fit);
 })();
