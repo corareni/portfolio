@@ -280,3 +280,6 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
   .skills__grid, .contact__links { grid-template-columns: 1fr; }
   .summary, .intro__text, .project__text > p, .about__story p { text-align: left !important; }
 }
+
+/* Hero pixel dissolve canvas */
+.hero-particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; visibility: hidden; }
