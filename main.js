@@ -26,6 +26,8 @@ onScroll();
   const title = document.querySelector('.hero .display');
   if (!title || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  const arrow = document.querySelector('.hero .arrow');
+  let arrowLeft = 0;
   const canvas = document.createElement('canvas');
   canvas.className = 'hero-particles';
   canvas.setAttribute('aria-hidden', 'true');
@@ -46,6 +48,7 @@ onScroll();
     ink = getComputedStyle(title).color;
     range = Math.max(innerHeight * 0.75, 400);
 
+    if (arrow) { arrow.style.transform = ''; arrowLeft = arrow.getBoundingClientRect().left; }
     const box = title.getBoundingClientRect();
     const pad = 4;
     const w = Math.ceil(box.width + pad * 2);
@@ -102,6 +105,15 @@ onScroll();
     const p = Math.min(Math.max(scrollY / range, 0), 1);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+    // The orange arrow slides off to the right in step with the dissolve, and back on the way up
+    if (arrow) {
+      const a = ease(Math.min(p / 0.6, 1));
+      const offRight = innerWidth - arrowLeft + 40;
+      arrow.style.transition = 'none';
+      arrow.style.transform = a > 0 ? `translateX(${(a * offRight).toFixed(1)}px)` : '';
+      arrow.style.opacity = a > 0 ? String(1 - a * 0.6) : '';
+    }
 
     if (p <= 0.001) { title.style.opacity = ''; canvas.style.visibility = 'hidden'; return; }
     title.style.opacity = '0';
