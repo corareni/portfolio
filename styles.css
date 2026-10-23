@@ -286,26 +286,26 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 
 /* Intro screen: plays on every load and again when you scroll back to the very top */
 .loader { display: none; }
-.intro .loader {
+.ld .loader {
   display: flex; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center;
   background: var(--ink); color: #fff;
   transition: transform .9s cubic-bezier(.76, 0, .24, 1);
 }
-.intro--lock body { overflow: hidden; }
-.intro--replay .loader { animation: loader-in .5s ease both; }
+.ld--lock body { overflow: hidden; }
+.ld--replay .loader { animation: loader-in .5s ease both; }
 @keyframes loader-in { from { opacity: 0; } }
 /* The full line is laid out in its final place from the start; the name is uncovered, not resized */
 .loader__inner { display: flex; align-items: baseline; gap: .35em; font-size: clamp(28px, 4vw, 48px); letter-spacing: -.02em; }
 .loader__mark { font-weight: 800; opacity: 0; transition: opacity .5s ease; }
 .loader__mark b { color: var(--orange); font-weight: 800; }
 .loader__name {
-  font-weight: 300; white-space: nowrap;
+  font-weight: 200; white-space: nowrap;
   clip-path: inset(0 100% 0 0);
   transition: clip-path 1s cubic-bezier(.65, 0, .35, 1) .45s;
 }
-.intro--play .loader__mark { opacity: 1; }
-.intro--play .loader__name { clip-path: inset(0 0 0 0); }
-.intro--done .loader { transform: translateY(-100%); }
+.ld--play .loader__mark { opacity: 1; }
+.ld--play .loader__name { clip-path: inset(0 0 0 0); }
+.ld--done .loader { transform: translateY(-100%); }
 
 /* Intro statement fills in word by word */
 .fill .word { color: #c9c9c9; transition: color .35s ease; }

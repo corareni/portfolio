@@ -199,9 +199,9 @@ onScroll();
 
   const lift = () => {
     clear();
-    root.classList.add('intro--done');
+    root.classList.add('ld--done');
     timers.push(setTimeout(() => {
-      root.classList.remove('intro', 'intro--lock', 'intro--play', 'intro--done', 'intro--replay');
+      root.classList.remove('ld', 'ld--lock', 'ld--play', 'ld--done', 'ld--replay');
       showing = false;
     }, 900));
   };
@@ -209,11 +209,11 @@ onScroll();
   const play = (replay) => {
     clear();
     showing = true;
-    root.classList.remove('intro--play', 'intro--done', 'intro--replay');
-    root.classList.add('intro');
-    if (replay) root.classList.add('intro--replay');
+    root.classList.remove('ld--play', 'ld--done', 'ld--replay');
+    root.classList.add('ld');
+    if (replay) root.classList.add('ld--replay');
     void loader.offsetWidth; // restart the transitions
-    requestAnimationFrame(() => root.classList.add('intro--play'));
+    requestAnimationFrame(() => root.classList.add('ld--play'));
     timers.push(setTimeout(lift, replay ? 1700 : 2000));
   };
 
@@ -225,7 +225,7 @@ onScroll();
     const y = scrollY;
     if (y > innerHeight * 0.6) armed = true;
     if (armed && y <= 0 && !showing) { armed = false; play(true); }
-    else if (showing && y > 40 && !root.classList.contains('intro--lock')) lift();
+    else if (showing && y > 40 && !root.classList.contains('ld--lock')) lift();
   }, { passive: true });
 })();
 
