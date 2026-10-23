@@ -448,3 +448,8 @@ body { transition: background-color .5s ease; }
   border-top: 1px solid rgba(255, 255, 255, .12);
 }
 .footer a { color: rgba(255, 255, 255, .8); }
+
+/* About opening line: bold and orange */
+.about__story .lead--orange { color: var(--orange); font-weight: 800; letter-spacing: -.02em; }
+.fill .lead--orange .word { color: #f4c9b3; }
+.fill .lead--orange .word.on { color: var(--orange); }
