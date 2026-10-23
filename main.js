@@ -303,6 +303,7 @@ onScroll();
       panels.forEach((p) => { const a = p.firstElementChild; a.style.width = ''; a.style.position = ''; a.style.left = ''; a.style.top = ''; });
     }
     if (!active) {
+      panels.forEach((p) => { p.style.opacity = ''; });
       journey.classList.add('journey--static');
       journey.style.height = '';
       return;
@@ -318,6 +319,15 @@ onScroll();
     const p = Math.min(Math.max(-top / Math.max(distance, 1), 0), 1);
     track.style.transform = `translate3d(${-p * distance}px, 0, 0)`;
     if (bar) bar.style.transform = `scaleX(${p})`;
+    // The project in place is fully visible. One leaving to the left fades out the further it goes;
+    // the next one fades in as it slides into place.
+    const home = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+    panels.forEach((panel) => {
+      const r = panel.getBoundingClientRect();
+      const d = (r.left - home) / r.width; // 0 = in place, negative = moving out left, positive = coming in
+      const o = d < 0 ? 1 + d * 1.4 : 1 - d * 0.6;
+      panel.style.opacity = Math.min(Math.max(o, 0), 1).toFixed(3);
+    });
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', layout);
