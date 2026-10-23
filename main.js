@@ -397,3 +397,62 @@ onScroll();
   rows.forEach((d) => d.addEventListener('toggle', sync));
   sync();
 })();
+
+// Experience: each job's bullet points type themselves out when the job scrolls into view.
+// The arrows stay put and the full text keeps its space, so nothing shifts while typing.
+(() => {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const lists = [...document.querySelectorAll('.timeline ul')];
+  if (!lists.length) return;
+
+  // Split every text node into a typed part and a hidden remainder
+  const prepare = (li) => {
+    const parts = [];
+    const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const full = node.textContent;
+      if (!full.trim()) return;
+      const shown = document.createElement('span');
+      const rest = document.createElement('span');
+      rest.className = 'tw-rest';
+      rest.textContent = full;
+      node.replaceWith(shown, rest);
+      parts.push({ shown, rest, full });
+    });
+    return parts;
+  };
+
+  const typeList = (ul, items) => {
+    const perChar = 11;   // ms per character
+    const pause = 140;    // ms between bullet points
+    let delay = 0;
+    items.forEach((parts) => {
+      parts.forEach(({ shown, rest, full }) => {
+        const start = delay;
+        const steps = full.length;
+        for (let i = 1; i <= steps; i++) {
+          setTimeout(() => {
+            shown.textContent = full.slice(0, i);
+            rest.textContent = full.slice(i);
+          }, start + i * perChar);
+        }
+        delay += steps * perChar;
+      });
+      delay += pause;
+    });
+  };
+
+  lists.forEach((ul) => {
+    // Hide the text up front (but keep its space) until the job comes into view
+    const items = [...ul.children].map(prepare);
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      typeList(ul, items);
+    }, { threshold: 0.35 });
+    io.observe(ul);
+  });
+})();

@@ -396,3 +396,6 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
   .deep__summary { grid-template-columns: 32px 1fr auto; gap: 12px; }
   .deep__body { padding-left: 0; }
 }
+
+/* Typewriter on the Experience bullets: untyped text keeps its space but stays invisible */
+.tw-rest { visibility: hidden; }
