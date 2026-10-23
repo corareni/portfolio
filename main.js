@@ -246,7 +246,7 @@ onScroll();
 (() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const paras = [];
-  document.querySelectorAll('.intro__text, .about__story').forEach((box) => {
+  document.querySelectorAll('.intro__text, .about__story, .next').forEach((box) => {
     box.querySelectorAll('p').forEach((para) => {
       const words = [];
       const parts = para.textContent.split(/(\s+)/);
@@ -482,4 +482,20 @@ onScroll();
   addEventListener('resize', place);
   addEventListener('load', place);
   place();
+})();
+
+// Turn the whole page black once the Thank you card has reached the top of the screen
+(() => {
+  const card = document.querySelector('.contact');
+  const nav = document.querySelector('.nav');
+  if (!card) return;
+  const root = document.documentElement;
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const navH = nav ? nav.offsetHeight : 64;
+    root.classList.toggle('end-dark', card.getBoundingClientRect().top <= navH + 4);
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; setTimeout(update, 16); } }, { passive: true });
+  update();
 })();
