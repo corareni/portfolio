@@ -425,34 +425,49 @@ onScroll();
     return parts;
   };
 
-  const typeList = (ul, items) => {
+  // Type one list, bullet by bullet, and resolve when it is done
+  const typeList = (items) => new Promise((resolve) => {
     const perChar = 11;   // ms per character
     const pause = 140;    // ms between bullet points
     let delay = 0;
     items.forEach((parts) => {
       parts.forEach(({ shown, rest, full }) => {
         const start = delay;
-        const steps = full.length;
-        for (let i = 1; i <= steps; i++) {
+        for (let i = 1; i <= full.length; i++) {
           setTimeout(() => {
             shown.textContent = full.slice(0, i);
             rest.textContent = full.slice(i);
           }, start + i * perChar);
         }
-        delay += steps * perChar;
+        delay += full.length * perChar;
       });
       delay += pause;
     });
-  };
-
-  lists.forEach((ul) => {
-    // Hide the text up front (but keep its space) until the job comes into view
-    const items = [...ul.children].map(prepare);
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      typeList(ul, items);
-    }, { threshold: 0.35 });
-    io.observe(ul);
+    setTimeout(resolve, delay);
   });
+
+  const showAll = (items) => items.forEach((parts) => parts.forEach(({ shown, rest, full }) => {
+    shown.textContent = full; rest.textContent = '';
+  }));
+
+  // Hide the text up front (but keep its space); type the jobs strictly in order, top to bottom
+  const queue = lists.map((ul) => ({ ul, items: [...ul.children].map(prepare), done: false }));
+  let busy = false;
+  const run = async () => {
+    if (busy) return;
+    busy = true;
+    for (const job of queue) {
+      if (job.done) continue;
+      const r = job.ul.getBoundingClientRect();
+      if (r.bottom < 0) { showAll(job.items); job.done = true; continue; }        // already scrolled past
+      if (r.top > innerHeight * 0.85) break;                                     // not reached yet
+      await typeList(job.items);
+      job.done = true;
+    }
+    busy = false;
+  };
+  let ticking = false;
+  const check = () => { ticking = false; run(); };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; setTimeout(check, 60); } }, { passive: true });
+  run();
 })();
