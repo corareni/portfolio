@@ -399,3 +399,14 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 
 /* Typewriter on the Experience bullets: untyped text keeps its space but stays invisible */
 .tw-rest { visibility: hidden; }
+
+/* "What's next": a big orange statement in my own words */
+.statement { margin: 4px 0 0; padding: 0; color: var(--orange); }
+.statement p {
+  font-weight: 800; font-size: clamp(26px, 3vw, 42px); line-height: 1.12; letter-spacing: -.025em;
+  text-align: left !important;
+}
+.statement footer { margin-top: 14px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.statement footer::before { content: ""; display: inline-block; width: 24px; height: 1px; background: currentColor; vertical-align: middle; margin-right: 10px; }
+.fill .statement .word { color: #f4c9b3; }
+.fill .statement .word.on { color: var(--orange); }
