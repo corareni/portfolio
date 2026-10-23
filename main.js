@@ -363,3 +363,16 @@ onScroll();
   addEventListener('load', layout);
   layout();
 })();
+
+
+// Deep dive links open the matching project before scrolling to it
+(() => {
+  const openFromHash = (hash) => {
+    const el = hash && document.getElementById(hash.slice(1));
+    if (el && el.tagName === 'DETAILS') el.open = true;
+  };
+  document.querySelectorAll('a[href^="#deep-"]').forEach((a) => {
+    a.addEventListener('click', () => openFromHash(a.getAttribute('href')));
+  });
+  openFromHash(location.hash);
+})();

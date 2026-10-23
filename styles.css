@@ -349,10 +349,41 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 .journey--static .jpanel { display: block; }
 .journey--static .jpanel .project { padding: clamp(48px, 7vw, 96px) 0; border-top: 1px solid var(--line); }
 
-/* Deep dives: the galleries, timelines and decks that don't fit in a sideways panel */
+/* Deep dives: one row per project that opens to show the galleries, timelines and decks */
 .deepdives { margin-top: clamp(72px, 10vw, 140px); }
-.deepdives__title { font-weight: 800; text-transform: uppercase; font-size: clamp(28px, 3.4vw, 44px); letter-spacing: -.03em; margin-bottom: 8px; }
-.deep { border-top: 1px solid var(--ink); padding: clamp(32px, 4vw, 56px) 0 clamp(48px, 6vw, 80px); display: grid; gap: 16px; }
-.deep .eyebrow { font-size: 13px; color: var(--muted); }
-.deep__title { font-weight: 800; text-transform: uppercase; font-size: clamp(30px, 4vw, 52px); letter-spacing: -.03em; line-height: .95; margin-bottom: 8px; }
-.deep .case { margin-top: 8px; }
+.deepdives__head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-bottom: 20px; border-bottom: 1px solid var(--ink); }
+.deepdives__title { font-weight: 800; text-transform: uppercase; font-size: clamp(32px, 4.4vw, 56px); letter-spacing: -.03em; line-height: .95; }
+.deepdives__head p { font-size: 14px; color: var(--muted); }
+.deep { border-bottom: 1px solid var(--line); }
+.deep__summary {
+  list-style: none; cursor: pointer;
+  display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 16px;
+  padding: 24px 0;
+}
+.deep__summary::-webkit-details-marker { display: none; }
+.deep__num { font-size: 13px; font-weight: 600; color: var(--orange); align-self: start; padding-top: 4px; }
+.deep__head { display: grid; gap: 4px; }
+.deep__type { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.deep__title { font-weight: 800; text-transform: uppercase; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.05; transition: color .2s; }
+.deep__teaser { font-size: 14px; color: var(--muted); }
+.deep__summary:hover .deep__title { color: var(--accent); }
+.deep__icon {
+  position: relative; width: 40px; height: 40px; border: 1px solid var(--ink); border-radius: 50%;
+  transition: background .2s, transform .35s cubic-bezier(.2, .7, .2, 1);
+}
+.deep__icon::before, .deep__icon::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; background: var(--ink);
+  transform: translate(-50%, -50%);
+}
+.deep__icon::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform .3s; }
+.deep[open] .deep__icon { background: var(--ink); }
+.deep[open] .deep__icon::before, .deep[open] .deep__icon::after { background: #fff; }
+.deep[open] .deep__icon::after { transform: translate(-50%, -50%) rotate(0deg); }
+.deep__summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+.deep__body { padding: 8px 0 clamp(40px, 5vw, 64px) 64px; }
+.deep[open] .deep__body { animation: deep-open .45s ease both; }
+@keyframes deep-open { from { opacity: 0; transform: translateY(-8px); } }
+@media (max-width: 640px) {
+  .deep__summary { grid-template-columns: 32px 1fr auto; gap: 12px; }
+  .deep__body { padding-left: 0; }
+}
