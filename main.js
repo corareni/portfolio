@@ -251,30 +251,70 @@ onScroll();
   addEventListener('resize', fit);
 })();
 
-// Selected work journey: pin the row and slide it sideways as the page scrolls down
+// Selected work journey: pin the row of full projects and slide it sideways as the page scrolls down.
+// On phones, short screens or with reduced motion the projects simply stack.
 (() => {
   const journey = document.querySelector('.journey');
   if (!journey) return;
   const pin = journey.querySelector('.journey__pin');
   const track = journey.querySelector('.journey__track');
   const bar = journey.querySelector('.journey__progress span');
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { journey.classList.add('journey--static'); return; }
+  const panels = [...track.querySelectorAll('.jpanel')];
+  const nav = document.querySelector('.nav');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let distance = 0;
+  let active = false;
   let ticking = false;
-  // The section is made tall enough that scrolling its height moves the row by its full overflow
-  const nav = document.querySelector('.nav');
+
   const layout = () => {
     const navH = nav ? nav.offsetHeight : 64;
+    // Measure in sideways mode, then fall back to stacking if a project would not fit on screen
+    journey.classList.remove('journey--static');
     pin.style.top = navH + 'px';
     pin.style.height = `calc(100vh - ${navH}px)`;
+    // Reset any earlier scaling, then measure each project at the panel width
+    panels.forEach((p) => { const a = p.firstElementChild; a.style.width = ''; a.style.transform = ''; a.style.position = ''; p.style.height = ''; });
+    const room = innerHeight - navH - 80;
+    const panelW = panels[0].clientWidth;
+    const tallestAt = (w) => {
+      panels.forEach((p) => { p.firstElementChild.style.width = w + 'px'; });
+      return Math.max(...panels.map((p) => p.firstElementChild.offsetHeight));
+    };
+    // If a project is taller than the window, lay it out a bit wider and scale it down to fit
+    // Wider layouts are shorter, so settle on a scale over a few rounds, then make the final fit exact
+    let scale = 1;
+    for (let i = 0; i < 5; i++) scale = Math.min(1, room / tallestAt(panelW / scale));
+    const w = panelW / scale;
+    scale = Math.min(1, room / tallestAt(w));
+    active = !still && innerWidth >= 900 && scale >= 0.55;
+    if (active) {
+      panels.forEach((p) => {
+        const a = p.firstElementChild;
+        a.style.position = 'absolute';
+        a.style.left = '0';
+        a.style.top = '0';
+        a.style.width = w + 'px';
+        a.style.transform = scale < 1 ? `scale(${scale})` : '';
+        a.style.transformOrigin = '0 0';
+        p.style.height = (a.offsetHeight * scale) + 'px';
+      });
+    } else {
+      panels.forEach((p) => { const a = p.firstElementChild; a.style.width = ''; a.style.position = ''; a.style.left = ''; a.style.top = ''; });
+    }
+    if (!active) {
+      journey.classList.add('journey--static');
+      journey.style.height = '';
+      return;
+    }
     distance = Math.max(track.scrollWidth - pin.clientWidth, 0);
     journey.style.height = (pin.offsetHeight + distance) + 'px';
     update();
   };
   const update = () => {
     ticking = false;
-    const top = journey.getBoundingClientRect().top - parseFloat(getComputedStyle(pin).top);
+    if (!active) return;
+    const top = journey.getBoundingClientRect().top - parseFloat(pin.style.top);
     const p = Math.min(Math.max(-top / Math.max(distance, 1), 0), 1);
     track.style.transform = `translate3d(${-p * distance}px, 0, 0)`;
     if (bar) bar.style.transform = `scaleX(${p})`;
