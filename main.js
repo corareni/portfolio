@@ -186,19 +186,47 @@ onScroll();
 })();
 
 
-// Intro loader: "CA." grows into the full name, then the screen lifts to reveal the hero
+// Intro screen: "CA. Coralie Affeld" on black, then the screen lifts to reveal the hero.
+// It plays on every load and fades back in when you scroll all the way back to the top.
 (() => {
   const root = document.documentElement;
   const loader = document.querySelector('.loader');
-  if (!loader || !root.classList.contains('intro')) { if (loader) loader.remove(); return; }
-  try { sessionStorage.setItem('ca-intro', '1'); } catch (e) {}
-  const finish = () => {
+  if (!loader || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (loader) loader.remove(); return; }
+
+  let timers = [];
+  let showing = false;
+  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+
+  const lift = () => {
+    clear();
     root.classList.add('intro--done');
-    setTimeout(() => { root.classList.remove('intro', 'intro--play', 'intro--done'); loader.remove(); }, 900);
+    timers.push(setTimeout(() => {
+      root.classList.remove('intro', 'intro--lock', 'intro--play', 'intro--done', 'intro--replay');
+      showing = false;
+    }, 900));
   };
-  // Name writes out at ~0.5s, the screen lifts at ~2s
-  requestAnimationFrame(() => root.classList.add('intro--play'));
-  setTimeout(finish, 2000);
+
+  const play = (replay) => {
+    clear();
+    showing = true;
+    root.classList.remove('intro--play', 'intro--done', 'intro--replay');
+    root.classList.add('intro');
+    if (replay) root.classList.add('intro--replay');
+    void loader.offsetWidth; // restart the transitions
+    requestAnimationFrame(() => root.classList.add('intro--play'));
+    timers.push(setTimeout(lift, replay ? 1700 : 2000));
+  };
+
+  play(false);
+
+  // Back at the very top after scrolling down: play it again. Scrolling down while it shows lifts it early.
+  let armed = false;
+  addEventListener('scroll', () => {
+    const y = scrollY;
+    if (y > innerHeight * 0.6) armed = true;
+    if (armed && y <= 0 && !showing) { armed = false; play(true); }
+    else if (showing && y > 40 && !root.classList.contains('intro--lock')) lift();
+  }, { passive: true });
 })();
 
 // Intro statement and About story fill in from grey to black word by word as you scroll through them
@@ -236,20 +264,6 @@ onScroll();
   update();
 })();
 
-// Footer wordmark: size the name to fill the content width exactly
-(() => {
-  const mark = document.querySelector('.wordmark');
-  const text = mark && mark.querySelector('span');
-  if (!text) return;
-  const fit = () => {
-    mark.style.fontSize = '100px';
-    const cs = getComputedStyle(mark);
-    const room = mark.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    mark.style.fontSize = (100 * room / text.getBoundingClientRect().width) + 'px';
-  };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
-  addEventListener('resize', fit);
-})();
 
 // Selected work journey: pin the row of full projects and slide it sideways as the page scrolls down.
 // On phones, short screens or with reduced motion the projects simply stack.
@@ -285,8 +299,11 @@ onScroll();
     // Wider layouts are shorter, so settle on a scale over a few rounds, then make the final fit exact
     let scale = 1;
     for (let i = 0; i < 5; i++) scale = Math.min(1, room / tallestAt(panelW / scale));
+    // Final fit: lay out at exactly the panel width for this scale, and only ever shrink further,
+    // so a project is never wider than its space or taller than the window
     const w = panelW / scale;
-    scale = Math.min(1, room / tallestAt(w));
+    const h = tallestAt(w);
+    if (h * scale > room) scale = room / h;
     active = !still && innerWidth >= 900 && scale >= 0.55;
     if (active) {
       panels.forEach((p) => {
@@ -325,7 +342,7 @@ onScroll();
     panels.forEach((panel) => {
       const r = panel.getBoundingClientRect();
       const d = (r.left - home) / r.width; // 0 = in place, negative = moving out left, positive = coming in
-      const o = d < 0 ? 1 + d * 1.4 : 1 - d * 0.6;
+      const o = d < 0 ? 1 + d * 1.4 : 1 - d * d;
       panel.style.opacity = Math.min(Math.max(o, 0), 1).toFixed(3);
     });
   };
