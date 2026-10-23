@@ -248,3 +248,37 @@ onScroll();
   addEventListener('load', () => { buildStars(); frame(); });
   requestAnimationFrame(twinkle);
 })();
+
+// Grade tiles count up from 0.0 to the real grade when they scroll into view
+(() => {
+  const nums = [...document.querySelectorAll('.grades strong')];
+  if (!nums.length || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const targets = nums.map((el) => {
+    const value = parseFloat(el.textContent);
+    const decimals = (el.textContent.split('.')[1] || '').length;
+    el.textContent = (0).toFixed(decimals);
+    return { el, value, decimals };
+  });
+
+  const run = ({ el, value, decimals }, delay) => {
+    const duration = 1400;
+    let start;
+    const tick = (now) => {
+      if (start === undefined) start = now + delay;
+      const t = Math.min(Math.max((now - start) / duration, 0), 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = (value * eased).toFixed(decimals);
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    targets.forEach((t, i) => run(t, i * 120));
+    io.disconnect();
+  }, { threshold: 0.4 });
+  io.observe(document.querySelector('.grades'));
+})();
