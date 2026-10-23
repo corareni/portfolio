@@ -5,7 +5,6 @@
   --paper: #ffffff;
   --soft: #f5f5f3;
   --orange: #f26b2a;
-  --space: #07070a;
   --gutter: clamp(16px, 5vw, 72px);
   --max: 1280px;
 }
@@ -103,47 +102,11 @@ section { padding: clamp(72px, 10vw, 140px) var(--gutter); max-width: var(--max)
 .stats span { font-size: 13px; color: var(--muted); }
 
 /* Projects */
-/* Selected work: a black band of space, projects arrive like planets */
-.work {
-  position: relative; color: #fff; isolation: isolate;
-  background: var(--space);
-  box-shadow: 0 0 0 100vmax var(--space);
-  clip-path: inset(0 -100vmax);
-}
-/* Screen-sized star layer; the section's clip-path keeps it inside the black band */
-.space { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
-.work .section-title { color: #fff; }
-.work .more { border-top-color: rgba(255, 255, 255, .5); }
-.work .more__title, .work .more strong { color: #fff; }
-.work .more span { color: rgba(255, 255, 255, .62); }
-.work .more .link { color: #fff; }
-
 .project {
-  position: relative;
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: clamp(32px, 5vw, 80px); align-items: center;
-  padding: clamp(28px, 4.5vw, 64px);
-  margin: 0 0 clamp(80px, 12vw, 180px);
-  background: var(--paper); color: var(--ink);
-  border-radius: clamp(20px, 3vw, 36px);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 40px 120px -40px var(--planet, var(--accent));
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
-}
-/* The planet: a lit sphere in the project's accent colour with a tilted ring */
-.planet {
-  position: absolute; z-index: 1; pointer-events: none;
-  width: clamp(64px, 9vw, 128px); aspect-ratio: 1;
-  top: calc(clamp(64px, 9vw, 128px) / -2.2); right: clamp(16px, 4vw, 56px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #fff 0, var(--planet, var(--accent)) 38%, #000 100%);
-  box-shadow: 0 0 60px -6px var(--planet, var(--accent));
-  will-change: transform;
-}
-.planet::after {
-  content: ""; position: absolute; left: -32%; right: -32%; top: 38%; height: 24%;
-  border: 2px solid rgba(255, 255, 255, .7); border-radius: 50%;
-  transform: rotate(-18deg);
+  padding: clamp(48px, 7vw, 96px) 0;
+  border-top: 1px solid var(--line);
 }
 .project__text { display: grid; gap: 16px; font-size: 15px; }
 .project h3 {
