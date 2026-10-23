@@ -172,6 +172,12 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 .about__story { display: grid; gap: 18px; }
 .about__story .lead { font-size: clamp(22px, 2.6vw, 34px); line-height: 1.2; letter-spacing: -.01em; }
 .about__story p:not(.lead) { }
+.portrait { margin: 0 0 28px; }
+.portrait img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 30%;
+  border: 1px solid var(--ink); border-radius: clamp(14px, 2vw, 24px);
+}
+.portrait figcaption { margin-top: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .facts { border-top: 1px solid var(--ink); }
 .facts li { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
 .facts span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
@@ -219,6 +225,7 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
   .intro, .about__grid, .edu-grid { grid-template-columns: 1fr; }
   .project { grid-template-columns: 1fr; }
   .project__media { order: -1; }
+  .portrait { max-width: 420px; }
   .skills__grid { grid-template-columns: 1fr 1fr; }
   .contact__links { grid-template-columns: 1fr 1fr; }
   .more ul { grid-template-columns: 1fr; }
