@@ -425,49 +425,43 @@ onScroll();
     return parts;
   };
 
-  // Type one list, bullet by bullet, and resolve when it is done
-  const typeList = (items) => new Promise((resolve) => {
-    const perChar = 11;   // ms per character
-    const pause = 140;    // ms between bullet points
-    let delay = 0;
+  // Type every bullet of a job at the same time
+  const typeList = (items) => {
+    const perChar = 11; // ms per character
     items.forEach((parts) => {
+      let offset = 0;
       parts.forEach(({ shown, rest, full }) => {
-        const start = delay;
+        const start = offset;
         for (let i = 1; i <= full.length; i++) {
           setTimeout(() => {
             shown.textContent = full.slice(0, i);
             rest.textContent = full.slice(i);
-          }, start + i * perChar);
+          }, (start + i) * perChar);
         }
-        delay += full.length * perChar;
+        offset += full.length; // text split around a link continues where it left off
       });
-      delay += pause;
     });
-    setTimeout(resolve, delay);
-  });
+  };
 
   const showAll = (items) => items.forEach((parts) => parts.forEach(({ shown, rest, full }) => {
     shown.textContent = full; rest.textContent = '';
   }));
 
-  // Hide the text up front (but keep its space); type the jobs strictly in order, top to bottom
+  // Hide the text up front (but keep its space); each job types as soon as it is on screen
   const queue = lists.map((ul) => ({ ul, items: [...ul.children].map(prepare), done: false }));
-  let busy = false;
-  const run = async () => {
-    if (busy) return;
-    busy = true;
-    for (const job of queue) {
-      if (job.done) continue;
+  const run = () => {
+    queue.forEach((job) => {
+      if (job.done) return;
       const r = job.ul.getBoundingClientRect();
-      if (r.bottom < 0) { showAll(job.items); job.done = true; continue; }        // already scrolled past
-      if (r.top > innerHeight * 0.85) break;                                     // not reached yet
-      await typeList(job.items);
-      job.done = true;
-    }
-    busy = false;
+      if (r.bottom < 0) { showAll(job.items); job.done = true; return; } // already scrolled past
+      if (r.top < innerHeight * 0.85 || (r.top < innerHeight && r.bottom <= innerHeight)) { typeList(job.items); job.done = true; }
+    });
   };
   let ticking = false;
   const check = () => { ticking = false; run(); };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; setTimeout(check, 60); } }, { passive: true });
+  // Also start a job whenever enough of it becomes visible, even without further scrolling
+  const io = new IntersectionObserver((entries) => { if (entries.some((e) => e.isIntersecting)) run(); }, { threshold: 0.3 });
+  lists.forEach((ul) => io.observe(ul));
   run();
 })();
