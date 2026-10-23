@@ -241,12 +241,14 @@ onScroll();
   }, { passive: true });
 })();
 
-// Intro statement and About story fill in from grey to black word by word as you scroll through them
+// Intro statement and About story fill in from grey to full colour word by word as you scroll.
+// Each paragraph fills on its own and is complete while it is still in the lower part of the screen.
 (() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const blocks = [...document.querySelectorAll('.intro__text, .about__story')].map((box) => {
-    const words = [];
+  const paras = [];
+  document.querySelectorAll('.intro__text, .about__story').forEach((box) => {
     box.querySelectorAll('p').forEach((para) => {
+      const words = [];
       const parts = para.textContent.split(/(\s+)/);
       para.textContent = '';
       parts.forEach((part) => {
@@ -257,22 +259,23 @@ onScroll();
         para.append(w);
         words.push(w);
       });
+      paras.push({ para, words });
     });
     box.classList.add('fill');
-    return { box, words };
   });
   let ticking = false;
   const update = () => {
     ticking = false;
-    blocks.forEach(({ box, words }) => {
-      const r = box.getBoundingClientRect();
-      // Starts when the text's top is low on screen, done when its bottom reaches the middle
-      const p = Math.min(Math.max((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35), 0), 1);
+    paras.forEach(({ para, words }) => {
+      const r = para.getBoundingClientRect();
+      // Starts as the paragraph enters at the bottom; done once its first line is just above the middle
+      const p = Math.min(Math.max((innerHeight * 0.98 - r.top) / (innerHeight * 0.55), 0), 1);
       const lit = Math.round(p * words.length);
       words.forEach((w, i) => w.classList.toggle('on', i < lit));
     });
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', update);
   update();
 })();
 
