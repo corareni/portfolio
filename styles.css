@@ -351,9 +351,18 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 
 /* Deep dives: one row per project that opens to show the galleries, timelines and decks */
 .deepdives { margin-top: clamp(72px, 10vw, 140px); }
-.deepdives__head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-bottom: 20px; border-bottom: 1px solid var(--ink); }
+.deepdives__head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-bottom: 20px; border-bottom: 1px solid var(--ink); }
 .deepdives__title { font-weight: 800; text-transform: uppercase; font-size: clamp(32px, 4.4vw, 56px); letter-spacing: -.03em; line-height: .95; }
-.deepdives__head p { font-size: 14px; color: var(--muted); }
+.deepdives__toggle {
+  display: inline-flex; align-items: center; gap: 12px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 14px; color: var(--ink);
+}
+.deepdives__toggle:hover .deep__icon { background: var(--ink); }
+.deepdives__toggle:hover .deep__icon::before, .deepdives__toggle:hover .deep__icon::after { background: #fff; }
+.deepdives__toggle[aria-expanded="true"] .deep__icon { background: var(--ink); }
+.deepdives__toggle[aria-expanded="true"] .deep__icon::before, .deepdives__toggle[aria-expanded="true"] .deep__icon::after { background: #fff; }
+.deepdives__toggle[aria-expanded="true"] .deep__icon::after { transform: translate(-50%, -50%) rotate(0deg); }
+.deepdives__toggle:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 999px; }
 .deep { border-bottom: 1px solid var(--line); }
 .deep__summary {
   list-style: none; cursor: pointer;

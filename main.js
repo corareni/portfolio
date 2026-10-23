@@ -376,3 +376,24 @@ onScroll();
   });
   openFromHash(location.hash);
 })();
+
+
+// Deep dives header toggle: open or close every project at once, and stay in sync with the rows
+(() => {
+  const btn = document.querySelector('.deepdives__toggle');
+  if (!btn) return;
+  const rows = [...document.querySelectorAll('details.deep')];
+  const label = btn.querySelector('.deepdives__label');
+  const sync = () => {
+    const allOpen = rows.every((d) => d.open);
+    btn.setAttribute('aria-expanded', String(allOpen));
+    label.textContent = allOpen ? 'Close all' : 'Open all';
+  };
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    rows.forEach((d) => { d.open = open; });
+    sync();
+  });
+  rows.forEach((d) => d.addEventListener('toggle', sync));
+  sync();
+})();
