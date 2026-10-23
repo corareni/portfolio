@@ -102,27 +102,11 @@ section { padding: clamp(72px, 10vw, 140px) var(--gutter); max-width: var(--max)
 .stats span { font-size: 13px; color: var(--muted); }
 
 /* Projects */
-.stack { position: relative; }
 .project {
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: clamp(32px, 5vw, 80px); align-items: center;
-  padding: clamp(28px, 4.5vw, 64px);
-  margin-bottom: clamp(24px, 4vw, 48px);
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-radius: clamp(20px, 3vw, 36px);
-  box-shadow: 0 -12px 40px -24px rgba(0, 0, 0, .35);
-  position: sticky; top: 88px;
-  transform-origin: 50% 0;
-  will-change: transform;
-}
-.project::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  background: var(--paper); opacity: var(--cover, 0); pointer-events: none; z-index: 2;
-}
-.project::before {
-  content: ""; position: absolute; left: clamp(28px, 4.5vw, 64px); top: -1px;
-  width: 72px; height: 4px; border-radius: 0 0 4px 4px; background: var(--accent);
+  padding: clamp(48px, 7vw, 96px) 0;
+  border-top: 1px solid var(--line);
 }
 .project__text { display: grid; gap: 16px; font-size: 15px; }
 .project h3 {
