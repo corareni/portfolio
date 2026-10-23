@@ -250,3 +250,37 @@ onScroll();
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
   addEventListener('resize', fit);
 })();
+
+// Selected work journey: pin the row and slide it sideways as the page scrolls down
+(() => {
+  const journey = document.querySelector('.journey');
+  if (!journey) return;
+  const pin = journey.querySelector('.journey__pin');
+  const track = journey.querySelector('.journey__track');
+  const bar = journey.querySelector('.journey__progress span');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { journey.classList.add('journey--static'); return; }
+
+  let distance = 0;
+  let ticking = false;
+  // The section is made tall enough that scrolling its height moves the row by its full overflow
+  const nav = document.querySelector('.nav');
+  const layout = () => {
+    const navH = nav ? nav.offsetHeight : 64;
+    pin.style.top = navH + 'px';
+    pin.style.height = `calc(100vh - ${navH}px)`;
+    distance = Math.max(track.scrollWidth - pin.clientWidth, 0);
+    journey.style.height = (pin.offsetHeight + distance) + 'px';
+    update();
+  };
+  const update = () => {
+    ticking = false;
+    const top = journey.getBoundingClientRect().top - parseFloat(getComputedStyle(pin).top);
+    const p = Math.min(Math.max(-top / Math.max(distance, 1), 0), 1);
+    track.style.transform = `translate3d(${-p * distance}px, 0, 0)`;
+    if (bar) bar.style.transform = `scaleX(${p})`;
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', layout);
+  addEventListener('load', layout);
+  layout();
+})();
