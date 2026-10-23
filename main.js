@@ -465,3 +465,18 @@ onScroll();
   lists.forEach((ul) => io.observe(ul));
   run();
 })();
+
+// Pin the section before the Thank you card so the card slides over it.
+// A section taller than the screen pins by its bottom edge, so all of it is seen first.
+(() => {
+  const pinned = document.querySelector('.skills');
+  const nav = document.querySelector('.nav');
+  if (!pinned) return;
+  const place = () => {
+    const navH = nav ? nav.offsetHeight : 64;
+    pinned.style.top = Math.min(navH, innerHeight - pinned.offsetHeight) + 'px';
+  };
+  addEventListener('resize', place);
+  addEventListener('load', place);
+  place();
+})();

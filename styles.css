@@ -410,3 +410,32 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 .statement footer::before { content: ""; display: inline-block; width: 24px; height: 1px; background: currentColor; vertical-align: middle; margin-right: 10px; }
 .fill .statement .word { color: #f4c9b3; }
 .fill .statement .word.on { color: var(--orange); }
+
+/* Thank you: a black card that slides up over the pinned section before it */
+.skills { position: sticky; top: 64px; z-index: 1; background: var(--paper); }
+.contact {
+  position: relative; z-index: 2;
+  max-width: none; margin: 0 clamp(8px, 1vw, 14px);
+  padding-left: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+  padding-right: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+  background: var(--ink); color: #fff;
+  border-radius: clamp(24px, 3vw, 40px) clamp(24px, 3vw, 40px) 0 0;
+  box-shadow: 0 -30px 80px -40px rgba(0, 0, 0, .45);
+}
+.contact .meta span { color: rgba(255, 255, 255, .55); }
+.contact .meta strong { color: #fff; }
+.contact__links { border-top-color: rgba(255, 255, 255, .5); }
+.contact__links a { color: #fff; }
+.contact__links a:hover { color: var(--orange); }
+.contact__links span { color: rgba(255, 255, 255, .55); }
+.footer {
+  position: relative; z-index: 2;
+  max-width: none; margin: 0 clamp(8px, 1vw, 14px);
+  padding-left: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+  padding-right: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+  background: var(--ink); color: rgba(255, 255, 255, .55);
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+.footer a { color: rgba(255, 255, 255, .8); }
+/* Keep the hero arrow's slide-out from widening the page */
+.hero { overflow-x: clip; }
