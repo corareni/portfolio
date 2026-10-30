@@ -177,7 +177,7 @@ a.project__media:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 0 
 
 .more { border-top: 1px solid var(--ink); padding-top: 40px; margin-top: 24px; }
 .more__title { font-weight: 800; text-transform: uppercase; font-size: 24px; letter-spacing: -.02em; margin-bottom: 20px; }
-.more ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; }
+.more ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 48px; }
 .more strong { display: block; font-weight: 600; }
 .more li > span { font-size: 14px; color: var(--muted); }
 .more strong a { text-decoration: none; }
